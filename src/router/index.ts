@@ -1,86 +1,91 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import type { Role } from '@/types/user'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    /** Solo para usuarios sin sesión (login, recuperar contraseña). */
+    guest?: boolean
+    /** Roles que pueden entrar. Sin `roles`, cualquier usuario con sesión. */
+    roles?: Role[]
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: () => import('@/layouts/DefaultLayout.vue'),
+      component: () => import('@/layouts/MainLayout.vue'),
       children: [
         { path: '', name: 'home', component: () => import('@/views/HomeView.vue') },
-        { path: 'products/:slug', name: 'product-detail', component: () => import('@/views/ProductDetailView.vue'), props: true },
-        { path: 'stores', name: 'stores', component: () => import('@/views/StoresView.vue') },
-        { path: 'stores/:slug', name: 'store-detail', component: () => import('@/views/StoreDetailView.vue'), props: true },
-        { path: 'cart', name: 'cart', component: () => import('@/views/CartView.vue') },
-        {
-          path: 'orders',
-          name: 'orders',
-          component: () => import('@/views/OrdersView.vue'),
-          meta: { requiresAuth: true },
-        },
-        {
-          path: 'addresses',
-          name: 'addresses',
-          component: () => import('@/views/AddressesView.vue'),
-          meta: { requiresAuth: true },
-        },
         {
           path: 'profile',
           name: 'profile',
-          component: () => import('@/views/ProfileView.vue'),
-          meta: { requiresAuth: true },
-        },
-        {
-          path: 'my-store',
-          name: 'my-store',
-          component: () => import('@/views/seller/MyStoreView.vue'),
-          meta: { requiresAuth: true, role: 'seller' },
-        },
-        {
-          path: 'my-products',
-          name: 'my-products',
-          component: () => import('@/views/seller/MyProductsView.vue'),
-          meta: { requiresAuth: true, role: 'seller' },
-        },
-        {
-          path: 'my-products/new',
-          name: 'new-product',
-          component: () => import('@/views/seller/ProductFormView.vue'),
-          meta: { requiresAuth: true, role: 'seller' },
-        },
-        {
-          path: 'my-products/:id/edit',
-          name: 'edit-product',
-          component: () => import('@/views/seller/ProductFormView.vue'),
-          meta: { requiresAuth: true, role: 'seller' },
-          props: true,
+          component: () => import('@/views/profile/ProfileView.vue'),
         },
       ],
     },
-    { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { guest: true } },
-    { path: '/register', name: 'register', component: () => import('@/views/RegisterView.vue'), meta: { guest: true } },
+    {
+      path: '/',
+      component: () => import('@/layouts/AuthLayout.vue'),
+      meta: { guest: true },
+      children: [
+        { path: 'login', name: 'login', component: () => import('@/views/auth/LoginView.vue') },
+        {
+          path: 'forgot-password',
+          name: 'forgot-password',
+          component: () => import('@/views/auth/ForgotPasswordView.vue'),
+        },
+        // Enlace que envía la API por correo: /reset-password?token=...&email=...
+        {
+          path: 'reset-password',
+          name: 'reset-password',
+          component: () => import('@/views/auth/ResetPasswordView.vue'),
+        },
+      ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/NotFoundView.vue'),
+    },
   ],
 })
 
+/**
+ * Protege las rutas: pide sesión, manda al inicio a quien ya la tiene si abre
+ * el login y revisa el rol. La API vuelve a validar todo; esto solo ordena la navegación.
+ */
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
 
+  // Con token guardado pero sin datos (app recién abierta): se cargan del servidor.
   if (auth.isAuthenticated && !auth.user) {
-    await auth.fetchUser()
+    try {
+      await auth.fetchUser()
+    } catch {
+      auth.clear()
+    }
   }
 
-  if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+  if (to.name === 'not-found') {
+    return true
   }
 
-  if (to.meta.guest && auth.isAuthenticated) {
+  if (to.meta.guest) {
+    return auth.isAuthenticated ? { name: 'home' } : true
+  }
+
+  if (!auth.isAuthenticated) {
+    return { name: 'login', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
+  }
+
+  if (to.meta.roles && !auth.hasRole(...to.meta.roles)) {
     return { name: 'home' }
   }
 
-  if (to.meta.role && auth.userRole !== to.meta.role && auth.userRole !== 'admin') {
-    return { name: 'home' }
-  }
+  return true
 })
 
 export default router
