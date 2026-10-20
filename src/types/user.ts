@@ -8,9 +8,21 @@ export type Role =
   | 'dispatcher'
   | 'courier'
 
+/** Nombre visible de cada rol (igual que en la API). */
+export const roleLabels: Record<Role, string> = {
+  admin: 'Administrador',
+  doctor: 'Médico',
+  sales_rep: 'Visitador',
+  call_center: 'Call-Center',
+  billing: 'Facturador',
+  dispatcher: 'Despachador',
+  courier: 'Mensajero',
+}
+
 export interface Category {
   id: number
   name: string
+  products_count?: number
 }
 
 /** Datos de la clínica del médico, impresos en sus recetas. */

@@ -4,7 +4,17 @@ Aplicación web de SIT Marketplace: recetas médicas, pedidos, facturación, des
 
 El diseño recrea el de Vuexy (el del sistema anterior) con Tailwind: menú lateral, barra superior flotante, tarjetas con sombra suave y el color primario `#003DA5`.
 
-**Estado:** base de la aplicación lista (inicio de sesión, recuperación de contraseña, menú por rol y perfil). Los módulos se agregan en el mismo orden que la API: catálogo y usuarios, recetas, clientes y pedidos, facturación y entregas, reportes.
+#### 🧩 Módulos
+
+| Módulo | Quién | Estado |
+|---|---|---|
+| Inicio de sesión, recuperar contraseña y Mi perfil | Todos | ✅ |
+| Catálogo: productos (con imagen), categorías, laboratorios y presentaciones | Admin | ✅ |
+| Usuarios | Admin (todos) y visitador ("Mis médicos") | ✅ |
+| Recetas | Médico, call-center, admin | Pendiente |
+| Clientes y pedidos | Call-center, admin | Pendiente |
+| Facturación, despacho y entrega | Facturación, despachador, mensajero | Pendiente |
+| Reportes | Admin y quienes cobran comisión | Pendiente |
 
 ---
 
@@ -92,18 +102,19 @@ Con los datos demo de la API puedes entrar con cualquier rol excepto administrad
 src/
 ├── assets/          Tema (main.css) e imágenes
 ├── components/      Componentes compartidos
-│   └── ui/          Botón, input, tarjeta, alerta… (estilo Vuexy)
-├── composables/     Lógica reutilizable (useForm: envío y errores de formularios)
+│   └── ui/          Botón, input, select, modal, tabla, paginación… (estilo Vuexy)
+├── composables/     useForm (envío y errores), usePaginatedList (listas con filtros), useCatalogOptions
 ├── config/          Menú lateral por rol (navigation.ts)
 ├── layouts/         MainLayout (menú + barra) y AuthLayout (login)
 ├── router/          Rutas y protección por sesión/rol
 ├── services/        Cliente de la API (token, errores, sesión vencida)
-├── stores/          Estado global (sesión)
+├── stores/          Estado global (sesión y notificaciones)
 ├── types/           Tipos de los datos de la API
-└── views/           Páginas, agrupadas por módulo
+├── utils/           Formatos de moneda (Q) y fechas (hora de Guatemala)
+└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users)
 ```
 
-**Agregar un módulo:** crea sus vistas en `src/views/<módulo>/`, sus rutas en `src/router/index.ts` (con `meta.roles`) y su opción del menú en `src/config/navigation.ts` con los mismos roles que valida la API.
+**Agregar un módulo:** crea sus vistas en `src/views/<módulo>/` (los formularios en modal van en `components/` de esa carpeta), sus rutas en `src/router/index.ts` (con `meta.roles`) y su opción del menú en `src/config/navigation.ts` con los mismos roles que valida la API. Para listas paginadas usa `usePaginatedList`; para formularios, `useForm`; para avisos, `useToastStore`.
 
 ---
 

@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
-import { House } from 'lucide-vue-next'
+import { FlaskConical, House, Package, Pill, Stethoscope, Tags, Users } from 'lucide-vue-next'
 import type { Role } from '@/types/user'
 
 /** Opción del menú lateral. Sin `roles`, la ven todos los usuarios. */
@@ -23,7 +23,23 @@ export interface NavSection {
  */
 export const navigation: NavSection[] = [
   {
-    items: [{ label: 'Inicio', to: { name: 'home' }, icon: House }],
+    items: [
+      { label: 'Inicio', to: { name: 'home' }, icon: House },
+      { label: 'Mis médicos', to: { name: 'users' }, icon: Stethoscope, roles: ['sales_rep'] },
+    ],
+  },
+  {
+    title: 'Catálogo',
+    items: [
+      { label: 'Productos', to: { name: 'products' }, icon: Pill, roles: ['admin'] },
+      { label: 'Categorías', to: { name: 'categories' }, icon: Tags, roles: ['admin'] },
+      { label: 'Laboratorios', to: { name: 'labs' }, icon: FlaskConical, roles: ['admin'] },
+      { label: 'Presentaciones', to: { name: 'presentations' }, icon: Package, roles: ['admin'] },
+    ],
+  },
+  {
+    title: 'Administración',
+    items: [{ label: 'Usuarios', to: { name: 'users' }, icon: Users, roles: ['admin'] }],
   },
 ]
 

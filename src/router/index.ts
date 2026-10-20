@@ -24,6 +24,52 @@ const router = createRouter({
           name: 'profile',
           component: () => import('@/views/profile/ProfileView.vue'),
         },
+
+        // Catálogo (administrador).
+        {
+          path: 'products',
+          name: 'products',
+          component: () => import('@/views/catalog/ProductsView.vue'),
+          meta: { roles: ['admin'] },
+        },
+        {
+          path: 'categories',
+          name: 'categories',
+          component: () => import('@/views/catalog/NamedCatalogView.vue'),
+          props: {
+            endpoint: '/categories',
+            title: 'Categorías',
+            singular: 'categoría',
+            newTitle: 'Nueva categoría',
+          },
+          meta: { roles: ['admin'] },
+        },
+        {
+          path: 'labs',
+          name: 'labs',
+          component: () => import('@/views/catalog/NamedCatalogView.vue'),
+          props: {
+            endpoint: '/labs',
+            title: 'Laboratorios',
+            singular: 'laboratorio',
+            newTitle: 'Nuevo laboratorio',
+          },
+          meta: { roles: ['admin'] },
+        },
+        {
+          path: 'presentations',
+          name: 'presentations',
+          component: () => import('@/views/catalog/PresentationsView.vue'),
+          meta: { roles: ['admin'] },
+        },
+
+        // Usuarios: el administrador ve a todos; el visitador, a sus médicos.
+        {
+          path: 'users',
+          name: 'users',
+          component: () => import('@/views/users/UsersView.vue'),
+          meta: { roles: ['admin', 'sales_rep'] },
+        },
       ],
     },
     {
