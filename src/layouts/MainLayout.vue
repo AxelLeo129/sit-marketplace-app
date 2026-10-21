@@ -15,14 +15,18 @@ const year = new Date().getFullYear()
   <div class="min-h-screen">
     <SidebarNav :open="menuOpen" @close="menuOpen = false" />
 
-    <div class="flex min-h-screen flex-col lg:ml-[260px]">
+    <div class="flex min-h-screen flex-col lg:ml-[260px] print:ml-0">
       <AppNavbar @toggle-menu="menuOpen = !menuOpen" />
 
-      <main class="flex-1 px-4 py-6 lg:px-8">
-        <RouterView />
+      <main class="flex-1 px-4 py-6 lg:px-8 print:p-0">
+        <!-- La key monta la página de nuevo al cambiar de ruta, aunque use el mismo
+             componente (p. ej. de "Editar receta" a "Nueva receta"), para no arrastrar datos. -->
+        <RouterView :key="$route.path" />
       </main>
 
-      <footer class="px-4 pb-5 text-sm lg:px-8">COPYRIGHT © {{ year }} SIT Marketplace</footer>
+      <footer class="px-4 pb-5 text-sm lg:px-8 print:hidden">
+        COPYRIGHT © {{ year }} SIT Marketplace
+      </footer>
     </div>
   </div>
 </template>

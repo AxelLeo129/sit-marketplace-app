@@ -188,6 +188,8 @@ async function saveImage(productId: number): Promise<void> {
           v-model="form.data.price"
           label="Precio de venta (con IVA)"
           type="number"
+          min="0"
+          step="0.01"
           :error="form.errors.value.price"
           required
         />
@@ -195,6 +197,8 @@ async function saveImage(productId: number): Promise<void> {
           v-model="form.data.cost"
           label="Costo"
           type="number"
+          min="0"
+          step="0.01"
           :error="form.errors.value.cost"
           required
         />

@@ -27,7 +27,7 @@ const sections = computed(() => (auth.user ? navigationFor(auth.user.role) : [])
   />
 
   <aside
-    class="fixed inset-y-0 left-0 z-40 w-[260px] bg-white shadow-[0_0_15px_0_rgb(0_0_0/0.05)] transition-transform duration-300 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 w-[260px] bg-white shadow-[0_0_15px_0_rgb(0_0_0/0.05)] transition-transform duration-300 lg:translate-x-0 print:hidden"
     :class="open ? 'translate-x-0' : '-translate-x-full'"
     aria-label="Menú principal"
   >

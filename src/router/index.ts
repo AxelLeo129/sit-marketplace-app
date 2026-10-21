@@ -63,6 +63,35 @@ const router = createRouter({
           meta: { roles: ['admin'] },
         },
 
+        // Recetas: el médico las emite; el call-center las atiende.
+        {
+          path: 'prescriptions',
+          name: 'prescriptions',
+          component: () => import('@/views/prescriptions/PrescriptionsView.vue'),
+          meta: { roles: ['admin', 'doctor', 'call_center'] },
+        },
+        {
+          // Fuera de /prescriptions para que en el menú no se marquen "Recetas" y "Nueva receta" a la vez.
+          path: 'new-prescription',
+          name: 'prescription-create',
+          component: () => import('@/views/prescriptions/PrescriptionFormView.vue'),
+          meta: { roles: ['doctor'] },
+        },
+        {
+          path: 'prescriptions/:id(\\d+)',
+          name: 'prescription',
+          component: () => import('@/views/prescriptions/PrescriptionDetailView.vue'),
+          props: true,
+          meta: { roles: ['admin', 'doctor', 'call_center'] },
+        },
+        {
+          path: 'prescriptions/:id(\\d+)/edit',
+          name: 'prescription-edit',
+          component: () => import('@/views/prescriptions/PrescriptionFormView.vue'),
+          props: true,
+          meta: { roles: ['doctor'] },
+        },
+
         // Usuarios: el administrador ve a todos; el visitador, a sus médicos.
         {
           path: 'users',

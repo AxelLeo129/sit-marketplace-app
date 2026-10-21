@@ -4,7 +4,7 @@
  * La ruta indica cuál con sus props, p. ej. endpoint "/labs", title "Laboratorios",
  * singular "laboratorio" y newTitle "Nuevo laboratorio".
  */
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Pencil, Plus, Trash2 } from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
@@ -43,8 +43,6 @@ async function load(): Promise<void> {
 }
 
 onMounted(load)
-// De Categorías a Laboratorios se reutiliza este mismo componente: recargar al cambiar.
-watch(() => props.endpoint, load)
 
 function openForm(item: NamedItem | null = null): void {
   editing.value = item

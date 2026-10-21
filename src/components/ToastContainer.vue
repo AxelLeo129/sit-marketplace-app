@@ -9,7 +9,7 @@ const toastStore = useToastStore()
 </script>
 
 <template>
-  <div class="fixed top-5 right-5 z-[60] flex w-80 flex-col gap-3" aria-live="polite">
+  <div class="fixed top-5 right-5 z-[60] flex w-80 flex-col gap-3 print:hidden" aria-live="polite">
     <TransitionGroup
       enter-from-class="translate-x-8 opacity-0"
       leave-to-class="translate-x-8 opacity-0"

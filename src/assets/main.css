@@ -30,7 +30,7 @@
   }
 
   body {
-    @apply bg-body text-content font-sans antialiased;
+    @apply bg-body text-content font-sans antialiased print:bg-white;
   }
 
   h1,

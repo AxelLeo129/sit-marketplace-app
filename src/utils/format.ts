@@ -19,3 +19,9 @@ const dateTime = new Intl.DateTimeFormat('es-GT', {
 export function formatDateTime(iso: string): string {
   return dateTime.format(new Date(iso))
 }
+
+/** Fecha sin hora de la API ("2026-10-15") → "15/10/2026". */
+export function formatDate(date: string): string {
+  const [year, month, day] = date.split('-')
+  return `${day}/${month}/${year}`
+}

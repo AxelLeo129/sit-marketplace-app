@@ -13,6 +13,10 @@ withDefaults(
     icon?: Component
     autocomplete?: string
     required?: boolean
+    /** Límites para fechas y números (p. ej. min="2026-10-21" o step="0.01"). */
+    min?: string | number
+    max?: string | number
+    step?: string | number
   }>(),
   { type: 'text' },
 )
@@ -39,6 +43,9 @@ const id = useId()
         :placeholder="placeholder"
         :autocomplete="autocomplete"
         :required="required"
+        :min="min"
+        :max="max"
+        :step="step"
         :aria-invalid="error ? 'true' : undefined"
         class="w-full rounded-md border bg-white px-3 py-2.5 text-heading transition-shadow outline-none placeholder:text-content/50 focus:shadow-[0_3px_10px_0_rgb(0_0_0_/_0.15)]"
         :class="[

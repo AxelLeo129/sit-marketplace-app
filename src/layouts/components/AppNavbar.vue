@@ -33,7 +33,7 @@ async function logout(): Promise<void> {
 
 <template>
   <header
-    class="sticky top-4 z-20 mx-4 mt-4 flex h-16 items-center justify-between rounded-lg bg-white px-5 shadow-navbar lg:mx-8 lg:mt-5"
+    class="sticky top-4 z-20 mx-4 mt-4 flex h-16 items-center justify-between rounded-lg bg-white px-5 shadow-navbar lg:mx-8 lg:mt-5 print:hidden"
   >
     <button
       type="button"
