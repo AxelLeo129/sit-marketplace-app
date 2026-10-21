@@ -8,7 +8,15 @@
  */
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { ArrowLeft, CalendarClock, Mail, Pencil, Printer, XCircle } from 'lucide-vue-next'
+import {
+  ArrowLeft,
+  CalendarClock,
+  Mail,
+  Pencil,
+  Printer,
+  ShoppingCart,
+  XCircle,
+} from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -87,6 +95,12 @@ async function cancel(): Promise<void> {
           <BaseButton variant="outline" @click="cancelOpen = true">
             <XCircle class="size-4" /> Cancelar receta
           </BaseButton>
+          <RouterLink
+            :to="{ name: 'order-create', params: { id: prescription.id } }"
+            class="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 font-medium text-white hover:shadow-[0_8px_25px_-8px_var(--color-primary)]"
+          >
+            <ShoppingCart class="size-4" /> Crear pedido
+          </RouterLink>
         </template>
         <RouterLink
           v-if="prescription.can.update"

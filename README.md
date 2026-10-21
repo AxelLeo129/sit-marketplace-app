@@ -12,7 +12,7 @@ El diseño recrea el de Vuexy (el del sistema anterior) con Tailwind: menú late
 | Catálogo: productos (con imagen), categorías, laboratorios y presentaciones | Admin | ✅ |
 | Usuarios | Admin (todos) y visitador ("Mis médicos") | ✅ |
 | Recetas: emitir, editar, imprimir y enviar por correo (médico); reagendar y cancelar (call-center) | Médico, call-center, admin | ✅ |
-| Clientes y pedidos | Call-center, admin | Pendiente |
+| Clientes y pedidos: crear el pedido desde la receta (cliente, direcciones, medicamentos, pago), listado, detalle con montos según el rol y cancelación | Call-center y admin (crean); facturación, despachador y mensajero (consultan) | ✅ |
 | Facturación, despacho y entrega | Facturación, despachador, mensajero | Pendiente |
 | Reportes | Admin y quienes cobran comisión | Pendiente |
 
@@ -111,7 +111,7 @@ src/
 ├── stores/          Estado global (sesión y notificaciones)
 ├── types/           Tipos de los datos de la API
 ├── utils/           Formatos de moneda (Q) y fechas (hora de Guatemala)
-└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions)
+└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions, orders)
 ```
 
 **Agregar un módulo:** crea sus vistas en `src/views/<módulo>/` (los formularios en modal van en `components/` de esa carpeta), sus rutas en `src/router/index.ts` (con `meta.roles`) y su opción del menú en `src/config/navigation.ts` con los mismos roles que valida la API. Para listas paginadas usa `usePaginatedList`; para formularios, `useForm`; para avisos, `useToastStore`.

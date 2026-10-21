@@ -7,6 +7,7 @@ import {
   House,
   Package,
   Pill,
+  ShoppingCart,
   Stethoscope,
   Tags,
   Users,
@@ -52,6 +53,17 @@ export const navigation: NavSection[] = [
         to: { name: 'prescriptions' },
         icon: FileText,
         roles: ['admin', 'doctor', 'call_center'],
+      },
+    ],
+  },
+  {
+    title: 'Ventas',
+    items: [
+      {
+        label: 'Pedidos',
+        to: { name: 'orders' },
+        icon: ShoppingCart,
+        roles: ['admin', 'call_center', 'billing', 'dispatcher', 'courier'],
       },
     ],
   },

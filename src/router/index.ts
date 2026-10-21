@@ -92,6 +92,28 @@ const router = createRouter({
           meta: { roles: ['doctor'] },
         },
 
+        // Pedidos: el call-center los crea desde una receta; cada rol ve los que le tocan.
+        {
+          path: 'prescriptions/:id(\\d+)/order',
+          name: 'order-create',
+          component: () => import('@/views/orders/OrderCreateView.vue'),
+          props: true,
+          meta: { roles: ['admin', 'call_center'] },
+        },
+        {
+          path: 'orders',
+          name: 'orders',
+          component: () => import('@/views/orders/OrdersView.vue'),
+          meta: { roles: ['admin', 'call_center', 'billing', 'dispatcher', 'courier'] },
+        },
+        {
+          path: 'orders/:id(\\d+)',
+          name: 'order',
+          component: () => import('@/views/orders/OrderDetailView.vue'),
+          props: true,
+          meta: { roles: ['admin', 'call_center', 'billing', 'dispatcher', 'courier'] },
+        },
+
         // Usuarios: el administrador ve a todos; el visitador, a sus médicos.
         {
           path: 'users',
