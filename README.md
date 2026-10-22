@@ -14,7 +14,10 @@ El diseño recrea el de Vuexy (el del sistema anterior) con Tailwind: menú late
 | Recetas: emitir, editar, imprimir y enviar por correo (médico); reagendar y cancelar (call-center) | Médico, call-center, admin | ✅ |
 | Clientes y pedidos: crear el pedido desde la receta (cliente, direcciones, medicamentos, pago), listado, detalle con montos según el rol y cancelación | Call-center y admin (crean); facturación, despachador y mensajero (consultan) | ✅ |
 | Facturación, despacho y entrega: facturar, asignar o reasignar mensajero, salir a ruta, entregar o reportar entrega fallida | Facturación, despachador, mensajero ("Mis entregas") | ✅ |
-| Reportes | Admin y quienes cobran comisión | Pendiente |
+| Reportes: ventas con gráficas y comisiones por beneficiario (admin); "Mis comisiones" | Admin y quienes cobran comisión | ✅ |
+| Inicio con resumen por rol (pendientes, ventas del mes, comisiones) | Todos | ✅ |
+
+Las gráficas usan un solo color (`--color-chart`, un paso más claro que el primario, validado contra fondo blanco), muestran el detalle al pasar el mouse o con el teclado y tienen "Ver como tabla".
 
 ---
 
@@ -102,6 +105,7 @@ Con los datos demo de la API puedes entrar con cualquier rol excepto administrad
 src/
 ├── assets/          Tema (main.css) e imágenes
 ├── components/      Componentes compartidos
+│   ├── charts/      Indicadores, columnas y barras (una serie, con tooltip y vista de tabla)
 │   └── ui/          Botón, input, select, modal, tabla, paginación… (estilo Vuexy)
 ├── composables/     useForm (envío y errores), usePaginatedList (listas con filtros), useCatalogOptions
 ├── config/          Menú lateral por rol (navigation.ts)
@@ -110,8 +114,8 @@ src/
 ├── services/        Cliente de la API (token, errores, sesión vencida)
 ├── stores/          Estado global (sesión y notificaciones)
 ├── types/           Tipos de los datos de la API
-├── utils/           Formatos de moneda (Q) y fechas (hora de Guatemala)
-└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions, orders)
+├── utils/           Formatos de moneda (Q), fechas y rangos de reportes (hora de Guatemala)
+└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions, orders, reports)
 ```
 
 **Agregar un módulo:** crea sus vistas en `src/views/<módulo>/` (los formularios en modal van en `components/` de esa carpeta), sus rutas en `src/router/index.ts` (con `meta.roles`) y su opción del menú en `src/config/navigation.ts` con los mismos roles que valida la API. Para listas paginadas usa `usePaginatedList`; para formularios, `useForm`; para avisos, `useToastStore`.

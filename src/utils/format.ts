@@ -9,6 +9,18 @@ export function formatMoney(amount: string | number): string {
   return money.format(Number(amount))
 }
 
+const compactMoney = new Intl.NumberFormat('es-GT', {
+  style: 'currency',
+  currency: 'GTQ',
+  notation: 'compact',
+  maximumFractionDigits: 1,
+})
+
+/** Para ejes de gráficas: 1500 → "Q1.5 mil". */
+export function formatMoneyCompact(amount: number): string {
+  return compactMoney.format(amount)
+}
+
 const dateTime = new Intl.DateTimeFormat('es-GT', {
   dateStyle: 'short',
   timeStyle: 'short',

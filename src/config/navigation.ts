@@ -1,9 +1,11 @@
 import type { Component } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import {
+  ChartColumn,
   FilePlus,
   FileText,
   FlaskConical,
+  HandCoins,
   House,
   Package,
   Pill,
@@ -68,6 +70,24 @@ export const navigation: NavSection[] = [
       },
       // Mismo listado: la API solo le muestra al mensajero sus pedidos.
       { label: 'Mis entregas', to: { name: 'orders' }, icon: Truck, roles: ['courier'] },
+    ],
+  },
+  {
+    title: 'Reportes',
+    items: [
+      { label: 'Ventas', to: { name: 'sales-report' }, icon: ChartColumn, roles: ['admin'] },
+      {
+        label: 'Comisiones',
+        to: { name: 'commissions-report' },
+        icon: HandCoins,
+        roles: ['admin'],
+      },
+      {
+        label: 'Mis comisiones',
+        to: { name: 'my-commissions' },
+        icon: HandCoins,
+        roles: ['doctor', 'sales_rep', 'call_center', 'courier'],
+      },
     ],
   },
   {

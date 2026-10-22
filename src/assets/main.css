@@ -19,6 +19,11 @@
   --color-heading: #2c2c2c;
   --color-content: #626262;
 
+  /* Gráficas: barras un paso más claro que el primario (validado contra fondo blanco)
+     y líneas de guía casi imperceptibles. */
+  --color-chart: #2b67d1;
+  --color-chart-grid: #ececec;
+
   --shadow-card: 0 4px 25px 0 rgb(0 0 0 / 0.1);
   --shadow-navbar: 0 4px 20px 0 rgb(0 0 0 / 0.05);
   --shadow-primary: 0 0 10px 1px rgb(0 61 165 / 0.7);

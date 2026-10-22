@@ -114,6 +114,26 @@ const router = createRouter({
           meta: { roles: ['admin', 'call_center', 'billing', 'dispatcher', 'courier'] },
         },
 
+        // Reportes: el administrador ve ventas y todas las comisiones; quien cobra, las suyas.
+        {
+          path: 'reports/sales',
+          name: 'sales-report',
+          component: () => import('@/views/reports/SalesReportView.vue'),
+          meta: { roles: ['admin'] },
+        },
+        {
+          path: 'reports/commissions',
+          name: 'commissions-report',
+          component: () => import('@/views/reports/CommissionsReportView.vue'),
+          meta: { roles: ['admin'] },
+        },
+        {
+          path: 'my-commissions',
+          name: 'my-commissions',
+          component: () => import('@/views/reports/MyCommissionsView.vue'),
+          meta: { roles: ['doctor', 'sales_rep', 'call_center', 'courier'] },
+        },
+
         // Usuarios: el administrador ve a todos; el visitador, a sus médicos.
         {
           path: 'users',
