@@ -6,7 +6,17 @@
  */
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { ArrowLeft, XCircle } from 'lucide-vue-next'
+import {
+  ArrowLeft,
+  MapPin,
+  Navigation,
+  PackageCheck,
+  PackageX,
+  Phone,
+  ReceiptText,
+  Truck,
+  XCircle,
+} from 'lucide-vue-next'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -16,6 +26,9 @@ import { useToastStore } from '@/stores/toast'
 import type { Resource } from '@/types/api'
 import { orderStatusVariants, type Order } from '@/types/order'
 import { formatDateTime, formatMoney } from '@/utils/format'
+import AssignCourierModal from './components/AssignCourierModal.vue'
+import DeliveryResultModal from './components/DeliveryResultModal.vue'
+import InvoiceModal from './components/InvoiceModal.vue'
 
 const props = defineProps<{ id: string }>()
 
@@ -24,6 +37,54 @@ const toast = useToastStore()
 const order = ref<Order | null>(null)
 const cancelOpen = ref(false)
 const cancelling = ref(false)
+
+// Pasos del flujo facturación → despacho → entrega.
+const invoiceOpen = ref(false)
+const assignOpen = ref(false)
+const startOpen = ref(false)
+const starting = ref(false)
+const resultOpen = ref(false)
+const result = ref<'delivered' | 'failed'>('delivered')
+
+/** Enlace de Google Maps con la dirección de entrega, para el mensajero. */
+const mapsUrl = computed(() =>
+  order.value
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.value.shipping_address.full_address)}`
+    : '',
+)
+
+/** Si ya tenía factura (p. ej. entrega fallida), hay que anularla fuera del sistema. */
+const cancelMessage = computed(() => {
+  if (!order.value) return ''
+  const base = `¿Cancelar el pedido No. ${order.value.id}? Las existencias regresan al inventario y la receta queda cancelada.`
+  return order.value.invoice.number
+    ? `${base} La factura ${order.value.invoice.number} debe anularse fuera del sistema.`
+    : base
+})
+
+/** Actualiza el pedido con la respuesta de la API y avisa. */
+function updated(next: Order, message: string): void {
+  order.value = next
+  toast.success(message)
+}
+
+function openResult(value: 'delivered' | 'failed'): void {
+  result.value = value
+  resultOpen.value = true
+}
+
+async function startDelivery(): Promise<void> {
+  starting.value = true
+  try {
+    const response = await api.post<Resource<Order>>(`/orders/${props.id}/start-delivery`)
+    updated(response.data, 'Pedido en ruta.')
+  } catch (error) {
+    toast.error(error instanceof ApiError ? error.message : 'No se pudo actualizar el pedido.')
+  } finally {
+    starting.value = false
+    startOpen.value = false
+  }
+}
 
 /** La API solo manda estos montos a quien puede verlos. */
 const showTaxes = computed(() => order.value?.items[0]?.vat_amount !== undefined)
@@ -104,17 +165,41 @@ async function cancel(): Promise<void> {
         </p>
       </div>
 
+      <!-- Acciones del paso actual según el rol (bloque `can` de la API). -->
       <div class="flex flex-wrap gap-3">
         <BaseButton v-if="order.can.cancel" variant="outline" @click="cancelOpen = true">
           <XCircle class="size-4" /> Cancelar pedido
         </BaseButton>
+        <BaseButton v-if="order.can.invoice" @click="invoiceOpen = true">
+          <ReceiptText class="size-4" /> Facturar
+        </BaseButton>
+        <BaseButton v-if="order.can.assign" @click="assignOpen = true">
+          <Truck class="size-4" />
+          {{ order.delivery.courier ? 'Reasignar mensajero' : 'Asignar mensajero' }}
+        </BaseButton>
+        <BaseButton v-if="order.can.start_delivery" @click="startOpen = true">
+          <Navigation class="size-4" /> Salir a ruta
+        </BaseButton>
+        <template v-if="order.can.complete_delivery">
+          <BaseButton variant="danger" @click="openResult('failed')">
+            <PackageX class="size-4" /> No se pudo entregar
+          </BaseButton>
+          <BaseButton variant="success" @click="openResult('delivered')">
+            <PackageCheck class="size-4" /> Entregado
+          </BaseButton>
+        </template>
       </div>
     </div>
 
     <div class="mb-6 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       <BaseCard title="Cliente">
         <p class="font-semibold text-heading">{{ order.customer.name }}</p>
-        <p>Tel. {{ order.customer.phone }}</p>
+        <a
+          :href="`tel:${order.customer.phone}`"
+          class="inline-flex items-center gap-1 text-primary hover:underline"
+        >
+          <Phone class="size-3.5" /> {{ order.customer.phone }}
+        </a>
         <p v-if="order.customer.email">{{ order.customer.email }}</p>
       </BaseCard>
 
@@ -144,9 +229,23 @@ async function cancel(): Promise<void> {
 
       <BaseCard title="Entrega">
         <p class="text-sm">{{ order.shipping_address.full_address }}</p>
-        <p v-if="order.shipping_address.phone" class="text-sm">
-          Tel. {{ order.shipping_address.phone }}
-        </p>
+        <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <a
+            :href="mapsUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 text-primary hover:underline"
+          >
+            <MapPin class="size-3.5" /> Ver en mapa
+          </a>
+          <a
+            v-if="order.shipping_address.phone"
+            :href="`tel:${order.shipping_address.phone}`"
+            class="inline-flex items-center gap-1 text-primary hover:underline"
+          >
+            <Phone class="size-3.5" /> {{ order.shipping_address.phone }}
+          </a>
+        </div>
         <dl class="mt-2 space-y-1 text-sm">
           <div v-if="order.delivery.courier">
             <dt class="inline font-semibold text-heading">Mensajero:</dt>
@@ -280,10 +379,41 @@ async function cancel(): Promise<void> {
     <ConfirmModal
       v-model:open="cancelOpen"
       title="Cancelar pedido"
-      :message="`¿Cancelar el pedido No. ${order.id}? Las existencias regresan al inventario y la receta queda cancelada.`"
+      :message="cancelMessage"
       confirm-label="Cancelar pedido"
       :loading="cancelling"
       @confirm="cancel"
+    />
+    <ConfirmModal
+      v-model:open="startOpen"
+      title="Salir a ruta"
+      :message="`¿Sales a entregar el pedido No. ${order.id} a ${order.shipping_address.full_address}?`"
+      confirm-label="Salir a ruta"
+      variant="primary"
+      :loading="starting"
+      @confirm="startDelivery"
+    />
+    <InvoiceModal
+      v-model:open="invoiceOpen"
+      :order="order"
+      @saved="(next) => updated(next, `Pedido facturado con la factura ${next.invoice.number}.`)"
+    />
+    <AssignCourierModal
+      v-model:open="assignOpen"
+      :order="order"
+      @saved="(next) => updated(next, `Pedido asignado a ${next.delivery.courier?.name}.`)"
+    />
+    <DeliveryResultModal
+      v-model:open="resultOpen"
+      :order="order"
+      :result="result"
+      @saved="
+        (next) =>
+          updated(
+            next,
+            result === 'delivered' ? 'Entrega confirmada.' : 'Se reportó la entrega fallida.',
+          )
+      "
     />
   </template>
 </template>

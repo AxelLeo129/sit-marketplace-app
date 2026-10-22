@@ -14,6 +14,8 @@ import TableSkeleton from '@/components/ui/TableSkeleton.vue'
 import { usePaginatedList } from '@/composables/usePaginatedList'
 import { orderStatusLabels, orderStatusVariants, type Order, type OrderStatus } from '@/types/order'
 import { formatDateTime, formatMoney } from '@/utils/format'
+import { useAuthStore } from '@/stores/auth'
+import type { Role } from '@/types/user'
 
 type OrderFilters = {
   status: OrderStatus | null
@@ -22,9 +24,20 @@ type OrderFilters = {
   created_to: string
 }
 
+const auth = useAuthStore()
 const router = useRouter()
+
+/**
+ * Facturación y despacho abren la lista en los pedidos que les toca trabajar.
+ * El mensajero ve todos los suyos (asignados y en ruta).
+ */
+const startingStatus: Partial<Record<Role, OrderStatus>> = {
+  billing: 'pending_invoice',
+  dispatcher: 'invoiced',
+}
+
 const list = usePaginatedList<Order, OrderFilters>('/orders', {
-  status: null,
+  status: auth.user ? (startingStatus[auth.user.role] ?? null) : null,
   search: '',
   created_from: '',
   created_to: '',
@@ -46,7 +59,7 @@ function open(order: Order): void {
 </script>
 
 <template>
-  <h2 class="mb-6 text-2xl">Pedidos</h2>
+  <h2 class="mb-6 text-2xl">{{ auth.hasRole('courier') ? 'Mis entregas' : 'Pedidos' }}</h2>
 
   <div class="mb-4 space-y-4 rounded-lg bg-white p-5 shadow-card">
     <div class="flex flex-wrap gap-2" role="tablist">

@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Stethoscope,
   Tags,
+  Truck,
   Users,
 } from 'lucide-vue-next'
 import type { Role } from '@/types/user'
@@ -63,8 +64,10 @@ export const navigation: NavSection[] = [
         label: 'Pedidos',
         to: { name: 'orders' },
         icon: ShoppingCart,
-        roles: ['admin', 'call_center', 'billing', 'dispatcher', 'courier'],
+        roles: ['admin', 'call_center', 'billing', 'dispatcher'],
       },
+      // Mismo listado: la API solo le muestra al mensajero sus pedidos.
+      { label: 'Mis entregas', to: { name: 'orders' }, icon: Truck, roles: ['courier'] },
     ],
   },
   {

@@ -13,7 +13,7 @@ El diseño recrea el de Vuexy (el del sistema anterior) con Tailwind: menú late
 | Usuarios | Admin (todos) y visitador ("Mis médicos") | ✅ |
 | Recetas: emitir, editar, imprimir y enviar por correo (médico); reagendar y cancelar (call-center) | Médico, call-center, admin | ✅ |
 | Clientes y pedidos: crear el pedido desde la receta (cliente, direcciones, medicamentos, pago), listado, detalle con montos según el rol y cancelación | Call-center y admin (crean); facturación, despachador y mensajero (consultan) | ✅ |
-| Facturación, despacho y entrega | Facturación, despachador, mensajero | Pendiente |
+| Facturación, despacho y entrega: facturar, asignar o reasignar mensajero, salir a ruta, entregar o reportar entrega fallida | Facturación, despachador, mensajero ("Mis entregas") | ✅ |
 | Reportes | Admin y quienes cobran comisión | Pendiente |
 
 ---
