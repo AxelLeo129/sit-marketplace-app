@@ -131,9 +131,30 @@ src/
 
 ---
 
-### 🚀 Despliegue en producción
+### 🚀 Despliegue en producción (Firebase Hosting)
 
-Pendiente (Firebase Hosting).
+La app se publica en Firebase Hosting. Este repositorio también tiene las reglas de Cloud Storage (`storage.rules`) que usa la API para las imágenes.
+
+| Archivo | Para qué |
+|---|---|
+| `firebase.json` | Publica `dist/`, envía todas las rutas a `index.html` (rutas de Vue), cachea `assets/` un año y agrega encabezados de seguridad |
+| `storage.rules` | Solo la API escribe; el navegador solo puede ver `avatars/`, `clinic-logos/` y `products/` |
+| `.env.production.example` | Plantilla de la URL de la API en producción |
+
+**Primera vez:**
+```bash
+npx firebase-tools login
+npx firebase-tools use --add      # elige el proyecto; crea .firebaserc
+cp .env.production.example .env.production   # y pon la URL real de la API
+```
+
+**Publicar:**
+| Comando | Qué hace |
+|---|---|
+| `npm run deploy` | Revisa tipos, compila y publica en Hosting |
+| `npm run deploy:rules` | Publica las reglas de Storage |
+
+Antes de publicar, la API debe estar en internet con HTTPS y tener en su `.env` la URL de Hosting en `CORS_ALLOWED_ORIGINS` y `FRONTEND_URL` (p. ej. `https://tu-proyecto.web.app`).
 
 ---
 

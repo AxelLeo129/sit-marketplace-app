@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Reglas de Cloud Storage for Firebase para SIT Marketplace.
+//
+// Solo la API sube y borra imágenes, con su cuenta de servicio (que no pasa por
+// estas reglas). Desde el navegador nadie puede escribir; solo se pueden ver las
+// imágenes de las carpetas que la app muestra.
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Fotos de perfil, logos de clínica e imágenes de productos.
+    match /{folder}/{file} {
+      allow read: if folder in ['avatars', 'clinic-logos', 'products'];
+      allow write: if false;
+    }
+
+    // Todo lo demás queda cerrado.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

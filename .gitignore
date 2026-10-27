@@ -40,3 +40,10 @@ __screenshots__/
 
 # Variables de entorno locales (usar .env.example como plantilla)
 .env
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+
+# Variables de producción locales (usar .env.production.example como plantilla)
+.env.production
