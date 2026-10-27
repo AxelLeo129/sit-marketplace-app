@@ -9,6 +9,7 @@ import {
   House,
   Package,
   Pill,
+  ShieldCheck,
   ShoppingCart,
   Stethoscope,
   Tags,
@@ -101,7 +102,15 @@ export const navigation: NavSection[] = [
   },
   {
     title: 'Administración',
-    items: [{ label: 'Usuarios', to: { name: 'users' }, icon: Users, roles: ['admin'] }],
+    items: [
+      { label: 'Usuarios', to: { name: 'users' }, icon: Users, roles: ['admin'] },
+      {
+        label: 'Registro de accesos',
+        to: { name: 'access-log' },
+        icon: ShieldCheck,
+        roles: ['admin'],
+      },
+    ],
   },
 ]
 

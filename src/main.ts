@@ -5,6 +5,11 @@ import App from './App.vue'
 import router from './router'
 import { setUnauthorizedHandler } from './services/api'
 import { useAuthStore } from './stores/auth'
+// Montserrat servida desde la propia app (sin Google Fonts): menos terceros y una CSP más estricta.
+import '@fontsource/montserrat/latin-400.css'
+import '@fontsource/montserrat/latin-500.css'
+import '@fontsource/montserrat/latin-600.css'
+import '@fontsource/montserrat/latin-700.css'
 import './assets/main.css'
 
 const app = createApp(App)

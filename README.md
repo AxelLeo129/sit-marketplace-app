@@ -16,6 +16,7 @@ El diseño recrea el de Vuexy (el del sistema anterior) con Tailwind: menú late
 | Facturación, despacho y entrega: facturar, asignar o reasignar mensajero, salir a ruta, entregar o reportar entrega fallida | Facturación, despachador, mensajero ("Mis entregas") | ✅ |
 | Reportes: ventas con gráficas y comisiones por beneficiario (admin); "Mis comisiones" | Admin y quienes cobran comisión | ✅ |
 | Inicio con resumen por rol (pendientes, ventas del mes, comisiones) | Todos | ✅ |
+| Registro de accesos (inicios de sesión, intentos fallidos, bloqueos) | Admin | ✅ |
 
 Las gráficas usan un solo color (`--color-chart`, un paso más claro que el primario, validado contra fondo blanco), muestran el detalle al pasar el mouse o con el teclado y tienen "Ver como tabla".
 
@@ -115,7 +116,7 @@ src/
 ├── stores/          Estado global (sesión y notificaciones)
 ├── types/           Tipos de los datos de la API
 ├── utils/           Formatos de moneda (Q), fechas y rangos de reportes (hora de Guatemala)
-└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions, orders, reports)
+└── views/           Páginas, agrupadas por módulo (auth, profile, catalog, users, prescriptions, orders, reports, security)
 ```
 
 **Agregar un módulo:** crea sus vistas en `src/views/<módulo>/` (los formularios en modal van en `components/` de esa carpeta), sus rutas en `src/router/index.ts` (con `meta.roles`) y su opción del menú en `src/config/navigation.ts` con los mismos roles que valida la API. Para listas paginadas usa `usePaginatedList`; para formularios, `useForm`; para avisos, `useToastStore`.
@@ -125,9 +126,13 @@ src/
 ### 🔐 Seguridad
 
 - La API valida todos los permisos; las rutas y el menú por rol solo ordenan la navegación.
-- El token de sesión se guarda en `localStorage` y se envía como `Bearer`. Si la API lo rechaza (venció o desactivaron al usuario), la app cierra la sesión y vuelve al login.
+- El token de sesión se guarda en `localStorage` y se envía como `Bearer`. Si la API lo rechaza (venció o desactivaron al usuario), la app cierra la sesión y vuelve al login. *(Pendiente: moverlo a una cookie HttpOnly cuando se defina el dominio de producción.)*
 - Después de iniciar sesión solo se redirige a rutas internas de la app (`?redirect=`).
-- Las imágenes se revisan antes de subirlas (JPG, PNG o WEBP, máximo 2 MB); la API vuelve a validarlas.
+- Las imágenes se revisan antes de subirlas (JPG, PNG o WEBP, máximo 2 MB); la API vuelve a validarlas y las recodifica.
+- **Content Security Policy** en Hosting: scripts, estilos y fuentes solo de la propia app; imágenes solo de la app y de Firebase Storage; llamadas solo a la API. Es la defensa principal contra XSS.
+- La fuente Montserrat se sirve desde la propia app (`@fontsource/montserrat`), sin Google Fonts.
+- HSTS, `nosniff`, sin iframes (`X-Frame-Options: DENY`), `Referrer-Policy` y `Permissions-Policy`.
+- El administrador tiene **Administración → Registro de accesos**: inicios de sesión, intentos fallidos, bloqueos y cambios de contraseña con IP y navegador.
 
 ---
 
@@ -137,7 +142,8 @@ La app se publica en Firebase Hosting. Este repositorio también tiene las regla
 
 | Archivo | Para qué |
 |---|---|
-| `firebase.json` | Publica `dist/`, envía todas las rutas a `index.html` (rutas de Vue), cachea `assets/` un año y agrega encabezados de seguridad |
+| `firebase.json` | Publica `dist/`, envía todas las rutas a `index.html` (rutas de Vue), cachea `assets/` un año y agrega encabezados de seguridad y la CSP |
+| `scripts/check-csp.mjs` | Antes de publicar, comprueba que la URL de la API de `.env.production` esté permitida en la CSP |
 | `storage.rules` | Solo la API escribe; el navegador solo puede ver `avatars/`, `clinic-logos/` y `products/` |
 | `.env.production.example` | Plantilla de la URL de la API en producción |
 
@@ -147,11 +153,12 @@ npx firebase-tools login
 npx firebase-tools use --add      # elige el proyecto; crea .firebaserc
 cp .env.production.example .env.production   # y pon la URL real de la API
 ```
+En `firebase.json`, cambia `https://api.example.com` (en `connect-src` de la CSP) por el dominio real de la API. `npm run deploy` no publica si no coinciden.
 
 **Publicar:**
 | Comando | Qué hace |
 |---|---|
-| `npm run deploy` | Revisa tipos, compila y publica en Hosting |
+| `npm run deploy` | Revisa la CSP y los tipos, compila y publica en Hosting |
 | `npm run deploy:rules` | Publica las reglas de Storage |
 
 Antes de publicar, la API debe estar en internet con HTTPS y tener en su `.env` la URL de Hosting en `CORS_ALLOWED_ORIGINS` y `FRONTEND_URL` (p. ej. `https://tu-proyecto.web.app`).

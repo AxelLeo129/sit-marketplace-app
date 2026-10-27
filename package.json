@@ -14,10 +14,12 @@
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/",
-    "deploy": "npm run build && npx firebase-tools deploy --only hosting",
+    "check:csp": "node scripts/check-csp.mjs",
+    "deploy": "npm run check:csp && npm run build && npx firebase-tools deploy --only hosting",
     "deploy:rules": "npx firebase-tools deploy --only storage"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.3.0",
     "@tailwindcss/vite": "^4.2.2",
     "lucide-vue-next": "^1.0.0",
     "pinia": "^3.0.4",

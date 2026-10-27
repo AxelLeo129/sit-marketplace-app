@@ -134,6 +134,14 @@ const router = createRouter({
           meta: { roles: ['doctor', 'sales_rep', 'call_center', 'courier'] },
         },
 
+        // Seguridad (administrador).
+        {
+          path: 'security/access-log',
+          name: 'access-log',
+          component: () => import('@/views/security/AccessLogView.vue'),
+          meta: { roles: ['admin'] },
+        },
+
         // Usuarios: el administrador ve a todos; el visitador, a sus médicos.
         {
           path: 'users',
