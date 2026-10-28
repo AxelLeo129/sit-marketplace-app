@@ -155,13 +155,15 @@ cp .env.production.example .env.production   # y pon la URL real de la API
 ```
 En `firebase.json`, cambia `https://api.example.com` (en `connect-src` de la CSP) por el dominio real de la API. `npm run deploy` no publica si no coinciden.
 
+**Dominio propio:** la app va en `app.tu-dominio.com` y la API en `api.tu-dominio.com` (Railway, ver el README de la API). En la consola de Firebase: **Hosting → Agregar dominio personalizado →** `app.tu-dominio.com` y crea en el DNS los registros que indica; Firebase emite el certificado HTTPS (puede tardar unas horas).
+
 **Publicar:**
 | Comando | Qué hace |
 |---|---|
 | `npm run deploy` | Revisa la CSP y los tipos, compila y publica en Hosting |
 | `npm run deploy:rules` | Publica las reglas de Storage |
 
-Antes de publicar, la API debe estar en internet con HTTPS y tener en su `.env` la URL de Hosting en `CORS_ALLOWED_ORIGINS` y `FRONTEND_URL` (p. ej. `https://tu-proyecto.web.app`).
+Antes de publicar, la API debe estar en internet con HTTPS y tener en sus variables la URL de la app en `CORS_ALLOWED_ORIGINS` y `FRONTEND_URL` (`https://app.tu-dominio.com`).
 
 ---
 
